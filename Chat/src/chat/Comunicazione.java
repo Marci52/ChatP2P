@@ -20,12 +20,11 @@ public class Comunicazione {
 
     InetAddress lastAddress = null;
     int lastPort = 0;
-    
-    int portaInvio = 2002;
-    int portaRicezione = 2003;
 
+//    int portaInvio = 2002;
+//    int portaRicezione = 2003;
     public Comunicazione() throws SocketException {
-        server = new DatagramSocket(portaRicezione);
+        server = new DatagramSocket(2003);
     }
 
     public Messaggio Ricevi() throws IOException {
@@ -39,16 +38,19 @@ public class Comunicazione {
         return Messaggio.FromCSV(messaggio);
     }
 
-    public void Invia(String s) throws IOException {
-//        
+    public void Invia(String s, String ip) throws IOException {
+
 //        if (lastAddress == null || lastPort == 0) {
 //            return;
 //        }
 
         byte[] buffer = s.getBytes();
         DatagramPacket p = new DatagramPacket(buffer, buffer.length);
-        p.setAddress(InetAddress.getByName("localhost"));
-        p.setPort(portaInvio);
+//        p.setAddress(lastAddress);
+        p.setAddress(InetAddress.getByName(ip));
+//        p.setPort(lastPort);
+        p.setPort(2003);
+                
         server.send(p);
     }
 }

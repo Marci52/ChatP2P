@@ -19,46 +19,47 @@ public class ThreadServer extends Thread {
     Comunicazione com;
     boolean connessa;
     String myNickname;
-    String clientNickname;
-    Scanner scan = new Scanner(System.in);
-    String messaggio = "";
+    Condivisa c;
+    String ip;
 
-    public ThreadServer(String myNickname) throws SocketException {
+    public ThreadServer(String myNickname, Condivisa c) throws SocketException {
         com = new Comunicazione();
         connessa = false;
         this.myNickname = myNickname;
-        clientNickname = "";
-        messaggio = "";
+        this.c = c;
     }
 
     @Override
     public void run() {
-        System.out.print("[" + myNickname + "]: Inserire un comando(c=connessione, m=messaggio, e=esci): ");
-        String comando = scan.nextLine();
-        if (comando.equals("c")) {
-            System.out.print("[" + myNickname + "]: Inserire il proprio nickname: ");
-            clientNickname = scan.nextLine();
+        c.frame.setLabel2("prova");
+        Messaggio m = new Messaggio();
+
+        try {
+            m = com.Ricevi();
+            ip = m.indirizzoIP;
+        } catch (IOException ex) {
+            Logger.getLogger(ThreadServer.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        if (m.comando.equals("c")) {
             try {
-                com.Invia(comando + ";" + clientNickname);
+                com.Invia("y;" + myNickname, ip);
             } catch (IOException ex) {
                 Logger.getLogger(ThreadServer.class.getName()).log(Level.SEVERE, null, ex);
             }
-
+            connessa = true;
         }
-        if (comando.equals("m")) {
+        if (m.comando.equals("m")) {
             if (!connessa) {
-                System.out.println("[" + myNickname + "]: Errore: peer non connesso");
+                c.frame.setLabel2("Err: peer non connesso");
             } else {
-                System.out.print("[" + myNickname + "]: Inserire messaggio da inviare: ");
-                messaggio = scan.nextLine();
-                try {
-                    com.Invia(messaggio);
-                } catch (IOException ex) {
-                    Logger.getLogger(ThreadServer.class.getName()).log(Level.SEVERE, null, ex);
-                }
+                c.frame.setLabel2(m.dato);
             }
-
         }
-    }
 
+        if (m.comando.equals("e")) {
+            connessa = false;
+            ip = null;
+        }
+
+    }
 }
