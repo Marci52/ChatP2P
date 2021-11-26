@@ -40,10 +40,6 @@ public class Comunicazione {
 
     public void Invia(String s, String ip) throws IOException {
 
-//        if (lastAddress == null || lastPort == 0) {
-//            return;
-//        }
-
         byte[] buffer = s.getBytes();
         DatagramPacket p = new DatagramPacket(buffer, buffer.length);
 //        p.setAddress(lastAddress);
