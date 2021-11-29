@@ -21,8 +21,6 @@ public class Comunicazione {
     InetAddress lastAddress = null;
     int lastPort = 0;
 
-//    int portaInvio = 2002;
-//    int portaRicezione = 2003;
     public Comunicazione() throws SocketException {
         server = new DatagramSocket(2003);
     }
@@ -38,13 +36,11 @@ public class Comunicazione {
         return Messaggio.FromCSV(messaggio);
     }
 
-    public void Invia(String s, String ip) throws IOException {
+    public void Invia(Messaggio m) throws IOException {
 
-        byte[] buffer = s.getBytes();
+        byte[] buffer = m.dato.getBytes();
         DatagramPacket p = new DatagramPacket(buffer, buffer.length);
-//        p.setAddress(lastAddress);
-        p.setAddress(InetAddress.getByName(ip));
-//        p.setPort(lastPort);
+        p.setAddress(InetAddress.getByName(m.indirizzoIP));
         p.setPort(2003);
                 
         server.send(p);

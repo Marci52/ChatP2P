@@ -4,6 +4,7 @@
  */
 package chat;
 
+import java.io.IOException;
 import java.net.SocketException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -18,6 +19,7 @@ public class FrameP2P extends javax.swing.JFrame {
     Condivisa condivisa;
     String myNickname;
     Object options[] = {"No", "Si"};
+    Comunicazione com;
 
     public FrameP2P() throws SocketException {
         initComponents();
@@ -25,6 +27,7 @@ public class FrameP2P extends javax.swing.JFrame {
         condivisa = new Condivisa(this);
         t1 = new ThreadServer(myNickname, condivisa);
         t1.start();
+        com = t1.getCom();
     }
 
     /**
@@ -43,7 +46,6 @@ public class FrameP2P extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setLocation(new java.awt.Point(0, 0));
-        setPreferredSize(new java.awt.Dimension(420, 125));
 
         jLabel1.setText("Inserisci l'indirizzo ip del peer con cui vuoi comunicare:");
 
@@ -92,7 +94,11 @@ public class FrameP2P extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         Messaggio m = new Messaggio("c", myNickname, jTextArea1.getText());
-        condivisa.aggiungi(m);
+        try {
+            com.Invia(m);
+        } catch (IOException ex) {
+            Logger.getLogger(FrameP2P.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
@@ -133,11 +139,11 @@ public class FrameP2P extends javax.swing.JFrame {
             }
         });
 
-       
     }
-    public void setLabel1(String s){
-            jLabel1.setText(s);
-        }
+
+    public void setLabel1(String s) {
+        jLabel1.setText(s);
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;

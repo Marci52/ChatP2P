@@ -18,12 +18,4 @@ public class Condivisa {
         this.frame = frame;
         coda = new ArrayList<>();
     }
-       
-    public void aggiungi(Messaggio m){
-        coda.add(m);
-    }
-    
-    public void rimuovi(Messaggio m){
-        coda.remove(m);
-    }
 }

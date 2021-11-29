@@ -6,7 +6,6 @@ package chat;
 
 import java.io.IOException;
 import java.net.SocketException;
-import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
@@ -31,6 +30,10 @@ public class ThreadServer extends Thread {
         this.c = c;
     }
 
+    public Comunicazione getCom() {
+        return com;
+    }
+
     @Override
     public void run() {
         Messaggio m = new Messaggio();
@@ -46,8 +49,9 @@ public class ThreadServer extends Thread {
 
                 int scelta = JOptionPane.showOptionDialog(c.frame, m.dato + " desidera instaurare una connessione, accettare?", null, JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
                 if (scelta == 0) {
+                    m = new Messaggio("y;" + myNickname, ip);
                     try {
-                        com.Invia("y;" + myNickname, ip);
+                        com.Invia(m);
                     } catch (IOException ex) {
                         Logger.getLogger(ThreadServer.class.getName()).log(Level.SEVERE, null, ex);
                     }
