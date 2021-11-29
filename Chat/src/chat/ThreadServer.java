@@ -65,7 +65,6 @@ public class ThreadServer extends Thread {
                         }
                         JOptionPane.showMessageDialog(c.frame, "Connessione rifiutata");
                     }
-
                     break;
                 case "m":
                     if (!c.stato) {

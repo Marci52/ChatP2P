@@ -9,7 +9,6 @@ import java.net.SocketException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 
 /**
  *
@@ -135,6 +134,7 @@ public class FrameP2P extends javax.swing.JFrame {
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         if (condivisa.stato) {  
             m = new Messaggio("e");
+            condivisa.setStato(false);
             try {
                 com.Invia(m, "n");
             } catch (IOException ex) {
@@ -182,7 +182,6 @@ public class FrameP2P extends javax.swing.JFrame {
             public void run() {
                 try {
                     new FrameP2P().setVisible(true);
-
                 } catch (SocketException ex) {
                     Logger.getLogger(FrameP2P.class.getName()).log(Level.SEVERE, null, ex);
                 }

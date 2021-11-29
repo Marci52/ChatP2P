@@ -26,16 +26,6 @@ public class Messaggio {
     }
 
     public static Messaggio FromCSV(String csv) {
-//        String[] campi = csv.split(";");
-//        switch (campi.length) {
-//            case 1:
-//                return new Messaggio(campi[0]);
-//            case 2:
-//                return new Messaggio(campi[0], campi[1]);
-//            default:
-//                return null;
-//        }
-
         int i = csv.indexOf(";");
         String comando;
         String dato;
