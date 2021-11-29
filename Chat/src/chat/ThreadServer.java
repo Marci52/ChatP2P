@@ -41,42 +41,50 @@ public class ThreadServer extends Thread {
         while (true) {
             try {
                 m = com.Ricevi();
-                ip = m.indirizzoIP;
             } catch (IOException ex) {
                 Logger.getLogger(ThreadServer.class.getName()).log(Level.SEVERE, null, ex);
             }
-            if (m.comando.equals("c")) {
-
-                int scelta = JOptionPane.showOptionDialog(c.frame, m.dato + " desidera instaurare una connessione, accettare?", null, JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
-                if (scelta == 0) {
-                    m = new Messaggio("y;" + myNickname, ip);
-                    try {
-                        com.Invia(m);
-                    } catch (IOException ex) {
-                        Logger.getLogger(ThreadServer.class.getName()).log(Level.SEVERE, null, ex);
+            switch (m.comando) {
+                case "c":
+                    if(ip!=null){
+                        int scelta = JOptionPane.showOptionDialog(c.frame, m.dato + " desidera instaurare una connessione, accettare?", null, JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+                    if (scelta == 0) {
+                        m = new Messaggio("y;" + myNickname);
+                        try {
+                            com.Invia(m, "n");
+                        } catch (IOException ex) {
+                            Logger.getLogger(ThreadServer.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                        connessa = true;
+                        JOptionPane.showMessageDialog(c.frame, "Connessione avvenuta correttamente");
+                        c.frame.setLabel1("Scrivere il messaggio da inviare: ");
+                    } else {
+                        JOptionPane.showMessageDialog(c.frame, "Connessione rifiutata");
                     }
-                    connessa = true;
-                    JOptionPane.showMessageDialog(c.frame, "Connessione avvenuta correttamente");
-                    c.frame.setLabel1("Scrivere il messaggio da inviare: ");
-                } else {
-                    JOptionPane.showMessageDialog(c.frame, "Connessione rifiutata");
-                }
-
-            } else if (m.comando.equals("m")) {
-                if (!connessa) {
-                    JOptionPane.showMessageDialog(c.frame, "Errore: dispositivo non connesso", "Error Message Box", JOptionPane.ERROR_MESSAGE);
-
-                } else {
-                    JOptionPane.showMessageDialog(c.frame, m.dato);
-                }
-            } else if (m.comando.equals("e")) {
-                if (connessa) {
-                    connessa = false;
-                    ip = null;
-                    JOptionPane.showMessageDialog(c.frame, "Disconnessione avvenuta correttamente");
-                } else {
-                    JOptionPane.showMessageDialog(c.frame, "Errore: dispositivo non connesso", "Error Message Box", JOptionPane.ERROR_MESSAGE);
-                }
+                    }else{
+                        JOptionPane.showMessageDialog(c.frame, "Errore: dispositivo non connesso", "Error Message Box", JOptionPane.ERROR_MESSAGE);
+                    } 
+                    break;
+                case "m":
+                    if (!connessa) {
+                        JOptionPane.showMessageDialog(c.frame, "Errore: dispositivo non connesso", "Error Message Box", JOptionPane.ERROR_MESSAGE);
+                        
+                    } else {
+                        JOptionPane.showMessageDialog(c.frame, m.dato);
+                    }   break;
+                case "e":
+                    if (connessa) {
+                        connessa = false;
+                        ip = null;
+                        JOptionPane.showMessageDialog(c.frame, "Disconnessione avvenuta correttamente");
+                    } else {
+                        JOptionPane.showMessageDialog(c.frame, "Errore: dispositivo non connesso", "Error Message Box", JOptionPane.ERROR_MESSAGE);
+                    }   break;
+                    case"y":
+                        connessa=true;
+                        JOptionPane.showMessageDialog(c.frame, "Connessione avvenuta correttamente");
+                default:
+                    break;
             }
         }
     }

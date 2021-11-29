@@ -15,34 +15,38 @@ import java.net.SocketException;
  * @author marcello
  */
 public class Comunicazione {
-
+    
     DatagramSocket server;
-
+    
     InetAddress lastAddress = null;
     int lastPort = 0;
-
+    
     public Comunicazione() throws SocketException {
         server = new DatagramSocket(2003);
     }
-
+    
     public Messaggio Ricevi() throws IOException {
         byte[] buffer = new byte[1500];
         DatagramPacket p = new DatagramPacket(buffer, buffer.length);
         server.receive(p);
-
+        
         lastAddress = p.getAddress();
         lastPort = p.getPort();
-        String messaggio = new String(p.getData(), 0, p.getLength());
-        return Messaggio.FromCSV(messaggio);
+        String ricevuto = new String(p.getData(), 0, p.getLength());
+        return Messaggio.FromCSV(ricevuto);
     }
-
-    public void Invia(Messaggio m) throws IOException {
-
-        byte[] buffer = m.dato.getBytes();
+    
+    public void Invia(Messaggio m, String ip) throws IOException {
+        
+        byte[] buffer = m.toCSV().getBytes();
         DatagramPacket p = new DatagramPacket(buffer, buffer.length);
-        p.setAddress(InetAddress.getByName(m.indirizzoIP));
+        if ("n".equals(ip)) {
+            p.setAddress(InetAddress.getByName(ip));
+        } else {
+            p.setAddress(lastAddress);
+        }
         p.setPort(2003);
-                
+        
         server.send(p);
     }
 }

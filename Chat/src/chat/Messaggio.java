@@ -12,61 +12,44 @@ public class Messaggio {
 
     String comando;
     String dato;
-    String indirizzoIP;
 
     public Messaggio() {
-    }
-
-    public Messaggio(String comando, String dato, String indirizzoIP) {
-        this.comando = comando;
-        this.dato = dato;
-//        if (indirizzoIP != "") {
-//            this.indirizzoIP = indirizzoIP;
-//        }else
-//        {
-//            this.indirizzoIP = "ciao";
-//        }
-            this.indirizzoIP = indirizzoIP;
-
     }
 
     public Messaggio(String comando, String dato) {
         this.comando = comando;
         this.dato = dato;
-        this.indirizzoIP = null;
     }
 
     public Messaggio(String comando) {
         this.comando = comando;
-        this.dato = null;
-        this.indirizzoIP = null;
     }
 
     public static Messaggio FromCSV(String csv) {
         String[] campi = csv.split(";");
-        if ("".equals(campi[1]) && "".equals(campi[2])) {
-            return new Messaggio(campi[0]);
-        } else if ("".equals(campi[2])) {
-            return new Messaggio(campi[0], campi[1]);
-        } else {
-            return new Messaggio(campi[0], campi[1], campi[2]);
+        switch (campi.length) {
+            case 1:
+                return new Messaggio(campi[0]);
+            case 2:
+                return new Messaggio(campi[0], campi[1]);
+            default:
+                return null;
         }
     }
 
     public String toCSV() {
-        if ("".equals(dato) && "".equals(indirizzoIP)) {
+        if ("".equals(dato)) {
             return comando;
-        }  else if ("".equals(indirizzoIP)) {
-            return this.comando + ";" + this.dato;
-        }  else if (!"".equals(comando) && !"".equals(dato) && !"".equals(indirizzoIP)) {
-            return this.comando + ";" + this.dato + ";" + this.indirizzoIP;
         } else {
-            return null;
+            return comando+";"+dato;
         }
     }
 
     @Override
     public String toString() {
-        return this.comando + this.dato + this.indirizzoIP + "\n";
+        return this.comando + this.dato + "\n";
+    }
+    public String getComando(){
+        return comando;
     }
 }

@@ -93,9 +93,9 @@ public class FrameP2P extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        Messaggio m = new Messaggio("c", myNickname, jTextArea1.getText());
+        Messaggio m = new Messaggio("c", myNickname);
         try {
-            com.Invia(m);
+            com.Invia(m, jTextArea1.getText());
         } catch (IOException ex) {
             Logger.getLogger(FrameP2P.class.getName()).log(Level.SEVERE, null, ex);
         }
