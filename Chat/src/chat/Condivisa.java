@@ -11,11 +11,18 @@ import java.util.ArrayList;
  * @author marcello
  */
 public class Condivisa {
+
     FrameP2P frame;
     ArrayList<Messaggio> coda;
+    boolean stato;
 
     public Condivisa(FrameP2P frame) {
         this.frame = frame;
         coda = new ArrayList<>();
+        stato = false;  // false --> connessione, true --> messaggio
+    }
+
+    public void setStato(boolean stato) {
+        this.stato = stato;
     }
 }

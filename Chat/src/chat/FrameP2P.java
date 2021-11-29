@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.net.SocketException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 
 /**
  *
@@ -20,6 +22,7 @@ public class FrameP2P extends javax.swing.JFrame {
     String myNickname;
     Object options[] = {"No", "Si"};
     Comunicazione com;
+    Messaggio m;
 
     public FrameP2P() throws SocketException {
         initComponents();
@@ -43,6 +46,7 @@ public class FrameP2P extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         jTextArea1 = new javax.swing.JTextArea();
         jButton1 = new javax.swing.JButton();
+        jButton2 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setLocation(new java.awt.Point(0, 0));
@@ -63,6 +67,13 @@ public class FrameP2P extends javax.swing.JFrame {
             }
         });
 
+        jButton2.setText("Chiudi connessione");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -70,12 +81,16 @@ public class FrameP2P extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel1)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton1)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(jButton1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jButton2)))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -85,21 +100,55 @@ public class FrameP2P extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, 39, Short.MAX_VALUE))
-                .addContainerGap(50, Short.MAX_VALUE))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, 39, Short.MAX_VALUE)
+                        .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, 39, Short.MAX_VALUE)))
+                .addContainerGap(19, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        Messaggio m = new Messaggio("c", myNickname);
-        try {
-            com.Invia(m, jTextArea1.getText());
-        } catch (IOException ex) {
-            Logger.getLogger(FrameP2P.class.getName()).log(Level.SEVERE, null, ex);
+        if (condivisa.stato) {
+            m = new Messaggio("m", jTextArea1.getText());
+            try {
+                com.Invia(m, "n");
+            } catch (IOException ex) {
+                Logger.getLogger(FrameP2P.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        } else {
+            if ("".equals(jTextArea1.getText())) {
+                JOptionPane.showMessageDialog(this, "Errore: nessun indirizzo ip inserito", "Errore", JOptionPane.ERROR_MESSAGE);
+            } else {
+                m = new Messaggio("c", myNickname);
+                try {
+                    com.Invia(m, jTextArea1.getText());
+                } catch (IOException ex) {
+                    Logger.getLogger(FrameP2P.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
         }
+
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        if (condivisa.stato) {  
+            m = new Messaggio("e");
+            try {
+                com.Invia(m, "n");
+            } catch (IOException ex) {
+                Logger.getLogger(FrameP2P.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            JOptionPane.showMessageDialog(this, "Disconnessione avvenuta correttamente");
+        } else {
+            JOptionPane.showMessageDialog(this, "Errore: dispositivo non connesso", "Errore", JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    public String getjTextArea1() {
+        return jTextArea1.getText();
+    }
 
     /**
      * @param args the command line arguments
@@ -133,6 +182,7 @@ public class FrameP2P extends javax.swing.JFrame {
             public void run() {
                 try {
                     new FrameP2P().setVisible(true);
+
                 } catch (SocketException ex) {
                     Logger.getLogger(FrameP2P.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -147,6 +197,7 @@ public class FrameP2P extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextArea jTextArea1;
