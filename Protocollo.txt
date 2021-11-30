@@ -1,18 +1,16 @@
 Protocollo di comunicazione:
-Ogni peer comunica inviando una stringa in formato csv che puó contenere 3 argomenti:
-comando;messaggio;indirizzoIP
+Ogni peer comunica inviando una stringa in formato csv che puó contenere 2 argomenti:
+comando;messaggio
 
 comando:
 Puó assumere tre valori:
 "c": indica la richiesta di connessione
 "m": indica l'invio di un messaggio
 "e": indica la fine della comunicazione
+"y": indica la conferma della connessione
+"n": indica il rifiuto della connessione
 Questo argomento è obbligatorio
 
 messaggio:
 Contiene una stringa che assume un valore differente in base alle necessità (varia in base al comando che lo precede).
-Questo argomento è facoltativo (non viene inviato se il comando è "e").
-
-indirizzoIP:
-Contiene una stringa inserita dall'utente tramite l'interfaccia grafica.
-Questo argomento è facoltativo (viene inviato solo se il comando è "c").
+Questo argomento è facoltativo (non viene inviato se il comando è "e", "y" oppure "n").
