@@ -44,26 +44,30 @@ public class ThreadServer extends Thread {
             }
             switch (m.comando) {
                 case "c":
-                    nicknamePeer = m.dato;
-                    int scelta = JOptionPane.showOptionDialog(c.frame, m.dato + " desidera instaurare una connessione, accettare?", null, JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
-                    if (scelta == 0) {
-                        m = new Messaggio("y", myNickname);
-                        try {
-                            com.Invia(m, "n");
-                        } catch (IOException ex) {
-                            Logger.getLogger(ThreadServer.class.getName()).log(Level.SEVERE, null, ex);
+                    if (!c.stato) {
+                        nicknamePeer = m.dato;
+                        int scelta = JOptionPane.showOptionDialog(c.frame, m.dato + " desidera instaurare una connessione, accettare?", null, JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+                        if (scelta == 0) {
+                            m = new Messaggio("y", myNickname);
+                            try {
+                                com.Invia(m, "n");
+                            } catch (IOException ex) {
+                                Logger.getLogger(ThreadServer.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+                            c.setStato(true);
+                            JOptionPane.showMessageDialog(c.frame, "Connessione avvenuta correttamente");
+                            c.frame.setLabel1("Scrivere il messaggio da inviare: ");
+                        } else {
+                            m = new Messaggio("n");
+                            try {
+                                com.Invia(m, "n");
+                            } catch (IOException ex) {
+                                Logger.getLogger(ThreadServer.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+                            JOptionPane.showMessageDialog(c.frame, "Connessione rifiutata");
                         }
-                        c.setStato(true);
-                        JOptionPane.showMessageDialog(c.frame, "Connessione avvenuta correttamente");
-                        c.frame.setLabel1("Scrivere il messaggio da inviare: ");
                     } else {
-                        m = new Messaggio("n");
-                        try {
-                            com.Invia(m, "n");
-                        } catch (IOException ex) {
-                            Logger.getLogger(ThreadServer.class.getName()).log(Level.SEVERE, null, ex);
-                        }
-                        JOptionPane.showMessageDialog(c.frame, "Connessione rifiutata");
+                        JOptionPane.showMessageDialog(c.frame, "Errore: dispositivo occupato", "Errore", JOptionPane.ERROR_MESSAGE);
                     }
                     break;
                 case "m":
@@ -74,11 +78,9 @@ public class ThreadServer extends Thread {
                     }
                     break;
                 case "e":
-                    if (c.stato) {
                         c.setStato(false);
                         c.frame.setLabel1("Inserisci l'indirizzo del peer con cui vuoi comunicare: ");
                         JOptionPane.showMessageDialog(c.frame, "Disconnessione avvenuta correttamente");
-                    }
                     break;
                 case "y":
                     c.setStato(true);
