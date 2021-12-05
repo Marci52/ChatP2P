@@ -5,10 +5,11 @@
 package chat;
 
 import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.net.SocketException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JOptionPane;
 
 /**
  *
@@ -16,82 +17,27 @@ import javax.swing.JOptionPane;
  */
 public class ThreadServer extends Thread {
 
-    Comunicazione com;
-    String myNickname;
     Condivisa c;
-    Object options[] = {"Si", "No"};
-    String nicknamePeer;
+    ServerSocket serverSocket;
+    Socket clientSocket;
+    ThreadComunicazione client;
 
-    public ThreadServer(String myNickname, Condivisa c) throws SocketException {
-        com = new Comunicazione();
-        this.myNickname = myNickname;
+    public ThreadServer(Condivisa c) throws SocketException, IOException {
         this.c = c;
-    }
-
-    public Comunicazione getCom() {
-        return com;
+        serverSocket = new ServerSocket(2003);
     }
 
     @Override
     public void run() {
-        Messaggio m = new Messaggio();
+        try {
+            clientSocket = serverSocket.accept();
+            c.setServer(clientSocket);
+            client = new ThreadComunicazione(clientSocket, c);
+            client.start();
 
-        while (true) {
-            try {
-                m = com.Ricevi();
-            } catch (IOException ex) {
-                Logger.getLogger(ThreadServer.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            switch (m.comando) {
-                case "c":
-                    if (!c.stato) {
-                        nicknamePeer = m.dato;
-                        int scelta = JOptionPane.showOptionDialog(c.frame, m.dato + " desidera instaurare una connessione, accettare?", null, JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
-                        if (scelta == 0) {
-                            m = new Messaggio("y", myNickname);
-                            try {
-                                com.Invia(m, "n");
-                            } catch (IOException ex) {
-                                Logger.getLogger(ThreadServer.class.getName()).log(Level.SEVERE, null, ex);
-                            }
-                            c.setStato(true);
-                            JOptionPane.showMessageDialog(c.frame, "Connessione avvenuta correttamente");
-                            c.frame.setLabel1("Scrivere il messaggio da inviare: ");
-                        } else {
-                            m = new Messaggio("n");
-                            try {
-                                com.Invia(m, "n");
-                            } catch (IOException ex) {
-                                Logger.getLogger(ThreadServer.class.getName()).log(Level.SEVERE, null, ex);
-                            }
-                            JOptionPane.showMessageDialog(c.frame, "Connessione rifiutata");
-                        }
-                    } else {
-                        JOptionPane.showMessageDialog(c.frame, "Errore: dispositivo occupato", "Errore", JOptionPane.ERROR_MESSAGE);
-                    }
-                    break;
-                case "m":
-                    if (!c.stato) {
-                        JOptionPane.showMessageDialog(c.frame, "Errore: dispositivo non connesso", "Errore", JOptionPane.ERROR_MESSAGE);
-                    } else {
-                        JOptionPane.showMessageDialog(c.frame, nicknamePeer + ": " + m.dato);
-                    }
-                    break;
-                case "e":
-                        c.setStato(false);
-                        c.frame.setLabel1("Inserisci l'indirizzo del peer con cui vuoi comunicare: ");
-                        JOptionPane.showMessageDialog(c.frame, "Disconnessione avvenuta correttamente");
-                    break;
-                case "y":
-                    c.setStato(true);
-                    JOptionPane.showMessageDialog(c.frame, "Connessione avvenuta correttamente");
-                    c.frame.setLabel1("Scrivere il messaggio da inviare: ");
-                    break;
-                case "n":
-                    c.setStato(false);
-                    JOptionPane.showMessageDialog(c.frame, "Connessione rifiutata");
-                    c.frame.setLabel1("Inserisci l'indirizzo del peer con cui vuoi comunicare: ");
-            }
+        } catch (IOException ex) {
+            Logger.getLogger(ThreadServer.class.getName()).log(Level.SEVERE, null, ex);
         }
+
     }
 }

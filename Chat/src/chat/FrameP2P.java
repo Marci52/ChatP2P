@@ -4,8 +4,14 @@
  */
 package chat;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.InetAddress;
+import java.net.Socket;
 import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
@@ -16,20 +22,24 @@ import javax.swing.JOptionPane;
  */
 public class FrameP2P extends javax.swing.JFrame {
 
-    ThreadServer t1;
-    Condivisa condivisa;
+    ThreadServer server;
+    Condivisa c;
     String myNickname;
     Object options[] = {"No", "Si"};
-    Comunicazione com;
-    Messaggio m;
 
-    public FrameP2P() throws SocketException {
+    Socket client;
+    InetAddress ip;
+    PrintWriter out;
+    BufferedReader in;
+
+    String messaggio;
+
+    public FrameP2P() throws SocketException, IOException {
         initComponents();
         myNickname = "Utente1";
-        condivisa = new Condivisa(this);
-        t1 = new ThreadServer(myNickname, condivisa);
-        t1.start();
-        com = t1.getCom();
+        c = new Condivisa(this, myNickname);
+        server = new ThreadServer(c);
+        server.start();
     }
 
     /**
@@ -109,38 +119,38 @@ public class FrameP2P extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        if (condivisa.stato) {
-            m = new Messaggio("m", jTextArea1.getText());
-            try {
-                com.Invia(m, "n");
-            } catch (IOException ex) {
-                Logger.getLogger(FrameP2P.class.getName()).log(Level.SEVERE, null, ex);
-            }
+        client = c.getClient();
+        out = c.getOut();
+        in = c.getIn();
+        
+        if (c.stato) {
+            messaggio = "m" + jTextArea1.getText();
+            out.println(messaggio);
         } else {
             if ("".equals(jTextArea1.getText())) {
                 JOptionPane.showMessageDialog(this, "Errore: nessun indirizzo ip inserito", "Errore", JOptionPane.ERROR_MESSAGE);
             } else {
-                m = new Messaggio("c", myNickname);
+                messaggio = "c" + myNickname;
                 try {
-                    com.Invia(m, jTextArea1.getText());
-                } catch (IOException ex) {
+                    ip = InetAddress.getByName(jTextArea1.getText());
+                } catch (UnknownHostException ex) {
                     Logger.getLogger(FrameP2P.class.getName()).log(Level.SEVERE, null, ex);
                 }
+                out.println(messaggio);
             }
         }
-
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        if (condivisa.stato) {  
-            m = new Messaggio("e");
-            condivisa.setStato(false);
-            try {
-                com.Invia(m, "n");
-            } catch (IOException ex) {
-                Logger.getLogger(FrameP2P.class.getName()).log(Level.SEVERE, null, ex);
-            }
+        client = c.getClient();
+        out = c.getOut();
+        in = c.getIn();
+        
+        if (c.stato) {
+            c.setStato(false);
+            out.println("e");
             JOptionPane.showMessageDialog(this, "Disconnessione avvenuta correttamente");
+            c.frame.setLabel1("Inserisci l'indirizzo del peer con cui vuoi comunicare: ");
         } else {
             JOptionPane.showMessageDialog(this, "Errore: dispositivo non connesso", "Errore", JOptionPane.ERROR_MESSAGE);
         }
@@ -182,9 +192,10 @@ public class FrameP2P extends javax.swing.JFrame {
             public void run() {
                 try {
                     new FrameP2P().setVisible(true);
-                } catch (SocketException ex) {
+                } catch (IOException ex) {
                     Logger.getLogger(FrameP2P.class.getName()).log(Level.SEVERE, null, ex);
                 }
+
             }
         });
 

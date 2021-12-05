@@ -4,7 +4,11 @@
  */
 package chat;
 
-import java.util.ArrayList;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
 
 /**
  *
@@ -13,16 +17,38 @@ import java.util.ArrayList;
 public class Condivisa {
 
     FrameP2P frame;
-    ArrayList<Messaggio> coda;
     boolean stato;
+    String nickname;
+    Socket client;
 
-    public Condivisa(FrameP2P frame) {
+    PrintWriter out;
+    BufferedReader in;
+
+    public Condivisa(FrameP2P frame, String nickname) {
         this.frame = frame;
-        coda = new ArrayList<>();
-        stato = false;  // false --> connessione, true --> messaggio
+        stato = false;
+        this.nickname = nickname;
     }
 
     public void setStato(boolean stato) {
         this.stato = stato;
+    }
+
+    public void setServer(Socket client) throws IOException {
+        this.client = client;
+        out = new PrintWriter(client.getOutputStream(), true);
+        in = new BufferedReader(new InputStreamReader(client.getInputStream()));
+    }
+    
+    public Socket getClient(){
+        return client;
+    }
+    
+    public PrintWriter getOut(){
+        return out;
+    }
+    
+    public BufferedReader getIn(){
+        return in;
     }
 }
